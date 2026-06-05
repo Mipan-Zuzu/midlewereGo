@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"midlewerego/internal/handler"
 )
 
 func main () {
@@ -37,4 +37,7 @@ func HandleRoute (route *gin.Engine, db *gorm.DB) {
 			"data" : "PONG", 
 		})
 	})
+
+	route.POST("/api/user/new", handler.NewUser(db))
+	route.GET("/api/user/data")
 }
