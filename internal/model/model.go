@@ -1,5 +1,11 @@
 package model
+import (
+	"gorm.io/gorm"
+)
 
-type Model struct {
-	Email, Password, Username string
+type Models struct {
+	gorm.Model
+	Email string `validate:"required,email"`
+	Password string `validate:"required,min=8"`
+	Username string `validate:"required"`
 }
