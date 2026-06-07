@@ -33,7 +33,8 @@ func NewUser(db *gorm.DB) gin.HandlerFunc {
 		}
 		db.Create(user)
 		ctx.JSON(http.StatusOK, gin.H{
-			"data": hased,
+			"status": 200,
+			"data":   "succses sign user",
 		})
 	}
 }
@@ -45,6 +46,18 @@ func Login(db *gorm.DB) gin.HandlerFunc {
 			ctx.JSON(400, gin.H{"status": 400, "data": err.Error()})
 			return
 		}
-
+		var findUser *model.Models
+		if err := db.Where("email = ?", user.Email).First(&findUser).Error; err != nil {
+			ctx.JSON(404, gin.H{"status": 404, "data": "user not found"})
+			return
+		}
+		if err := utils.ComperePassword(findUser.Password, user.Password); err != nil {
+			ctx.JSON(401, gin.H{"status" : 401, "data" : "wrong password"})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{
+			"status": 200,
+			"data":   "succsesfull login",
+		})
 	}
 }

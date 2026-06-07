@@ -24,3 +24,7 @@ func HashPassword(password string) (string, error) {
 	return string(hashed), err
 }
 
+func ComperePassword(findUser string, inputuser string) error  {
+	data := bcrypt.CompareHashAndPassword([]byte(findUser), []byte(inputuser))
+	return data
+}
