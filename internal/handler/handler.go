@@ -4,6 +4,7 @@ import (
 	"midlewerego/internal/model"
 	"midlewerego/utils"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -20,10 +21,7 @@ func NewUser(db *gorm.DB) gin.HandlerFunc {
 		ctx.ShouldBindJSON(&user)
 		err := validate.Struct(user)
 		if err != nil {
-			ctx.JSON(400, gin.H{
-				"status": 400,
-				"data":   err.Error(),
-			})
+			ctx.JSON(400, gin.H{"status": 400,"data":   err.Error(),})
 			return
 		}
 		hased, err := utils.HashPassword(user.Password)
@@ -31,7 +29,16 @@ func NewUser(db *gorm.DB) gin.HandlerFunc {
 		if err != nil {
 			ctx.JSON(400, gin.H{"status": 400, "data": "failed to hash"})
 		}
-		db.Create(user)
+		if err := db.Create(user).Error; err != nil {
+			if strings.Contains(err.Error(), "email") {
+				ctx.JSON(400, gin.H{"status" : 400, "data" : "email alredy exist"})
+				return
+			}
+			if strings.Contains(err.Error(), "username") {
+				ctx.JSON(400, gin.H{"status": 400, "data" : "username alredy taken"})
+				return 
+			}
+		}
 		ctx.JSON(http.StatusOK, gin.H{
 			"status": 200,
 			"data":   "succses sign user",
@@ -55,9 +62,21 @@ func Login(db *gorm.DB) gin.HandlerFunc {
 			ctx.JSON(401, gin.H{"status" : 401, "data" : "wrong password"})
 			return
 		}
+
+		if user.Username != findUser.Username {
+			ctx.JSON(401, gin.H{"satatus": 401, "data" : "wrong username"})
+			return
+		}
+		jwtToken,err := utils.GenerateToken(user.ID)
+		if err != nil {
+			ctx.JSON(400, gin.H{"status" : 400, "data" : "failed to create jwt token"})
+			return
+		}
+		ctx.Header("Authorization", "Barier" + jwtToken)
 		ctx.JSON(http.StatusOK, gin.H{
 			"status": 200,
 			"data":   "succsesfull login",
 		})
 	}
 }
+
