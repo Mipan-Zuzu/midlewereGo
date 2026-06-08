@@ -4,6 +4,7 @@ import (
 	"midlewerego/config"
 	"midlewerego/internal/handler"
 	"midlewerego/midlewere"
+	"midlewerego/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,7 @@ func main() {
 	route := gin.Default()
 	midlewere.CorsMidllewere(route)
 	db := config.DbConection()
+	utils.RedishConnection()
 	HandleRoute(route, db)
 	route.Run(":3000")
 }
