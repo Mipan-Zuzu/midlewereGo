@@ -89,3 +89,27 @@ func Login(db *gorm.DB) gin.HandlerFunc {
 		})
 	}
 }
+
+func Dahsbord (db *gorm.DB) gin.HandlerFunc{
+	return func(ctx *gin.Context) {
+		RDB := utils.RDB
+		var bindJson *model.Models
+		var user *model.Models
+		if err := ctx.ShouldBindJSON(&bindJson); err != nil {
+			ctx.JSON(400, gin.H{"status" : 400, "data" : err.Error()})
+			return
+		}
+		if err := db.Where("email = ?", bindJson.Email).First(&user).Error; err != nil {
+			ctx.JSON(400, gin.H{"status" : 400, "data" : "data"})
+			return
+		}
+		// var redisAuth *model.RedisModel
+		bgCtx := context.Background()
+		key := bindJson.ID
+		if err := RDB.Get(bgCtx, key); err != nil {
+			
+		}
+		ctx.JSON(200, gin.H{"status" : 200, "data" : key})
+
+	}
+}

@@ -13,3 +13,7 @@ func CorsMidllewere (route *gin.Engine) {
 		AllowCredentials: true,
 	}))
 }
+
+func MidlewereChekingAuth () {
+	
+}
