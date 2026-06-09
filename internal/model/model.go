@@ -10,3 +10,7 @@ type Models struct {
 	Password string `validate:"required,min=8"`
 	Username string `validate:"required" gorm:"unique"`
 }
+
+type RedisModel struct {
+	auth string `validate:"required"`
+}

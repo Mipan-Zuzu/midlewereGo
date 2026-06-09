@@ -30,4 +30,5 @@ func HandleRoute(route *gin.Engine, db *gorm.DB) {
 
 	route.POST("/api/user/new", handler.NewUser(db))
 	route.POST("/api/user/login", handler.Login(db))
+	route.POST("/api/user/dashbord", handler.Dahsbord(db))
 }
